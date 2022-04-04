@@ -15,14 +15,14 @@ import com.example.todolist.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TaskFragment : Fragment(R.layout.fragment_tasks){
+class TaskFragment : Fragment(R.layout.fragment_tasks) {
 
     private val viewModel: TasksViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding =  FragmentTasksBinding.bind(view)
+        val binding = FragmentTasksBinding.bind(view)
 
         val tasksAdapter = TasksAdapter()
 
@@ -34,7 +34,7 @@ class TaskFragment : Fragment(R.layout.fragment_tasks){
             }
         }
 
-        viewModel.tasks.observe(viewLifecycleOwner){
+        viewModel.tasks.observe(viewLifecycleOwner) {
             tasksAdapter.submitList(it)
         }
 
@@ -53,17 +53,18 @@ class TaskFragment : Fragment(R.layout.fragment_tasks){
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
             R.id.action_sort_by_name -> {
-
-               true
+                viewModel.sortOrder.value = SortOrder.BY_NAME
+                true
             }
             R.id.action_sort_by_date_created -> {
-
+                viewModel.sortOrder.value = SortOrder.BY_DATE
                 true
             }
             R.id.action_hide_completed_tasks -> {
                 item.isChecked = !item.isChecked
+                viewModel.hideCompleted.value = item.isChecked
                 true
             }
             R.id.action_delete_all_completed_tasks -> {
