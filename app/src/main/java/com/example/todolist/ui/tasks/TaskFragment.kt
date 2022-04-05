@@ -17,7 +17,9 @@ import com.example.todolist.data.SortOrder
 import com.example.todolist.data.Task
 import com.example.todolist.databinding.FragmentTasksBinding
 import com.example.todolist.util.onQueryTextChanged
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -59,6 +61,19 @@ class TaskFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClick
 
         viewModel.tasks.observe(viewLifecycleOwner) {
             tasksAdapter.submitList(it)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.tasksEvent.collect { event ->
+                when (event){
+                    is TasksViewModel.TasksEvent.ShowUndoDeleteTaskMessage -> {
+                        Snackbar.make(requireView(), "Task deleted", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO"){
+                                viewModel.onUndoDeleteClick(event.task)
+                            }.show()
+                    }
+                }
+            }
         }
 
         setHasOptionsMenu(true)
