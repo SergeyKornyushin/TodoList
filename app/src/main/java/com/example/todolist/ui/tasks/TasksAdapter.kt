@@ -9,10 +9,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.data.Task
 import com.example.todolist.databinding.ItemTaskBinding
 
-class TasksAdapter : ListAdapter<Task, TasksAdapter.TasksViewHolder>(DiffCallback()) {
+class TasksAdapter(private val listener: OnItemClickListener) :
+    ListAdapter<Task, TasksAdapter.TasksViewHolder>(DiffCallback()) {
 
-    class TasksViewHolder(private val binding: ItemTaskBinding) :
+    inner class TasksViewHolder(private val binding: ItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        val task = getItem(adapterPosition)
+                        listener.onItemClick(task)
+                    }
+                }
+                checkboxCompleted.setOnClickListener {
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        val task = getItem(adapterPosition)
+                        listener.onCheckBoxClick(task, checkboxCompleted.isChecked)
+                    }
+                }
+            }
+        }
 
         fun bind(task: Task) {
             binding.apply {
@@ -22,6 +40,11 @@ class TasksAdapter : ListAdapter<Task, TasksAdapter.TasksViewHolder>(DiffCallbac
                 ivLabelPriority.isVisible = task.important
             }
         }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(task: Task)
+        fun onCheckBoxClick(task: Task, isChecked: Boolean)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TasksViewHolder {
