@@ -30,7 +30,6 @@ class TasksViewModel @Inject constructor(
     private val tasksEventChanel = Channel<TasksEvent>()
     val tasksEvent = tasksEventChanel.receiveAsFlow()
 
-    @ExperimentalCoroutinesApi
     private val tasksFlow = combine(
         searchQuery.asFlow(),
         preferencesFlow
